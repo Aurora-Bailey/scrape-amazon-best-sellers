@@ -2,7 +2,7 @@ const cheerio = require('cheerio')
 const rp = require('request-promise')
 const dm = require('./datamanager')
 
-class Scraper {
+class Crawler {
   constructor () {
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++ OPTIONS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     this.seed_options = {
@@ -22,6 +22,7 @@ class Scraper {
     }
     this.gzip = true
     this.speed = 1000 // in milliseconds
+    this.error_timeout = 60000 // on error move to next link after x milliseconds
     //---------------------------------------------------- END OPIONS ------------------------------------------------------------------------------------------------
 
     this.last = 0 // time of last scrape
@@ -29,21 +30,19 @@ class Scraper {
     this.proxy = process.env.PROXY
   }
 
-  scrape (uri, qs = {}) {
-    return rp({
-      qs,
-      uri,
-      gzip: this.gzip,
-      proxy: this.proxy,
-      headers: this.headers
-    })
-  }
+  execute (opt = {}) {
+    if (opt.uri && opt.qs) {
+      // process the last link with a new query string
+      this.request(opt.uri, opt.qs).then(response => {
 
-  execute (opt = false) {
-    if (opt) {
-
+      })).catch(err => {console.error('Request Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
     } else {
+      // grab a new link
+      dm.getScrapeLink().then(link => {
+        this.request(link.uri).then(response => {
 
+        })).catch(err => {console.error('Request Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
+      }).catch(err => {console.error('Get link Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
     }
 
     this.next()
@@ -56,6 +55,17 @@ class Scraper {
       this.last = Date.now()
       this.execute(opt)
     }, Math.max(0, milliseconds_to_next_loop))
+  }
+
+  request (uri, qs = {}) {
+    console.log(`Scraping: "${uri}" qs: ${JSON.stringify(qs)} proxy: ${this.proxy}`)
+    return rp({
+      qs,
+      uri,
+      gzip: this.gzip,
+      proxy: this.proxy,
+      headers: this.headers
+    })
   }
 
   seed () {
@@ -72,4 +82,4 @@ class Scraper {
 }
 
 // scraper is controlled by worker
-module.exports = new Scraper()
+module.exports = new Crawler()

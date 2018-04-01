@@ -1,4 +1,4 @@
-const scraper = require('./scraper')
+const crawler = require('./crawler')
 
 class Worker {
   constructor (cluster) {
@@ -6,7 +6,7 @@ class Worker {
     this.proxy = process.env.PROXY
 
     this.listenForProcessEvents()
-    scraper.start()
+    crawler.start()
   }
 
   listenForProcessEvents () {
