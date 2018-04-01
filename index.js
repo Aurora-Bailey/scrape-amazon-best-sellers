@@ -1,6 +1,5 @@
 const cheerio = require('cheerio')
 const rp = require('request-promise')
-const mongo = require('./mongodb')
 const dm = require('./datamanager')
 
 class Main {

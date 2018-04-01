@@ -1,3 +1,5 @@
+const cheerio = require('cheerio')
+
 class Scraper {
   constructor () {
 

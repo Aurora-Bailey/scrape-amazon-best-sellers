@@ -1,9 +1,10 @@
 const MongoClient = require('mongodb').MongoClient
+const config = require('./config')
 
 class Mongo {
   constructor() {
-    this._url = 'mongodb://localhost:27017'
-    this._dbName = 'scrape-amazon-best-sellers'
+    this._url = config.database_url
+    this._dbName = config.database_name
     this._db = false
   }
 
