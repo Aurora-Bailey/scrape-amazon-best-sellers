@@ -6,7 +6,9 @@ class Config {
       "54.218.13.67",
       "54.218.2.246"
     ]
-    
+    this.proxy_port = ':3128'
+    this.proxy_protocol = 'http://'
+
     //================================ Database ==================================
     this.database_url = 'mongodb://localhost:27017'
     this.database_name = 'scrape-amazon-test'

@@ -54,7 +54,7 @@ class Crawler {
       qs,
       uri,
       gzip: this.gzip,
-      proxy: this.proxy,
+      proxy: config.proxy_protocol + this.proxy + config.proxy_port,
       headers: this.headers
     })
   }
