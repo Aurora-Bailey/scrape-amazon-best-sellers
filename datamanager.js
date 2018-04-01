@@ -1,6 +1,6 @@
 const mongo = require('./mongodb')
 
-class LinkManager {
+class dataManager {
   constructor() {
   }
 
@@ -55,7 +55,7 @@ class LinkManager {
           if (err) reject(err)
           else {
             if (docs.length == 0) {
-              db.collection('links').insertOne({uri, parent, text, added: Date.now(), scraped: false, scraped_pages: 0, pages: 0, products: []}, (err, results) => {
+              db.collection('links').insertOne({uri, parent, text, added: Date.now(), scraped: false, scraped_pages: 0, pages: 0, products: [], worker: false}, (err, results) => {
                 if (err) reject(err)
                 else resolve(true)
               })
@@ -68,7 +68,7 @@ class LinkManager {
     })
   }
 
-  getScrapeLink () {
+  getScrapeLink (worker) {
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
         db.collection('links').find({scraped: false}).limit(1).toArray((err, docs) => {
@@ -86,4 +86,4 @@ class LinkManager {
   }
 }
 
-module.exports = new LinkManager()
+module.exports = new dataManager()

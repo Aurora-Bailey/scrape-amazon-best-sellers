@@ -1,35 +1,29 @@
 const cheerio = require('cheerio')
 const rp = require('request-promise')
 const mongo = require('./mongodb')
-const lm = require('./linkmanager')
+const dm = require('./datamanager')
 
 class Main {
   constructor () {
     this.start = Date.now()
     this.last = 0
-    this.speed = 375
+    this.speed = 1000
     this.loop = 0
     this.end = 100000
     this.proxies = [
-      "54.174.80.214",
-      "54.242.43.88",
-      "34.228.60.88",
-      "34.236.146.252",
-      "54.173.54.131",
-      "54.89.222.20",
-      "34.204.51.184",
-      "34.226.211.218"
-
+      "34.212.167.1",
+      "54.218.13.67",
+      "54.218.2.246"
     ]
     this.last_proxy = 0
   }
 
   execute (opt = {uri: '', qs: {}}) {
-    lm.getScrapeLink().then(link => {
+    opt.proxy = this.getProxy()
+    dm.getScrapeLink(opt.proxy).then(link => {
       let scraping_page = link.scraped_pages + 1
-      opt.uri = link.uri
       opt.qs.pg = scraping_page
-      opt.proxy = this.getProxy()
+      opt.uri = link.uri
 
       console.log('Request #', this.loop, ' opt: ', JSON.stringify(opt))
       this.scrape(opt).then(html => {
@@ -41,7 +35,7 @@ class Main {
         $('#zg_browseRoot').find('a').each(function (i, e) {
           let uri = $(this).attr('href').split('/ref=')[0]
           let text = $(this).text()
-          lm.addLink(uri, text, opt.uri)
+          dm.addLink(uri, text, opt.uri)
         })
 
         // Get Product Data
@@ -55,22 +49,22 @@ class Main {
             item.rating = parseFloat($(this).find('.a-icon-star').text().split(' ')[0])
             item.numreviews = parseInt($(this).find('.a-size-small').text().replace(/\W/g, ''))
             item.link = 'https://www.amazon.com' + $(this).find('.a-text-normal').attr('href').split('/ref=')[0]
-            lm.addLinkProduct(opt.uri, item)
+            dm.addLinkProduct(opt.uri, item)
           }
           catch(err) {
             console.log('unable to parse item')
             item.error = true
-            lm.addLinkProduct(opt.uri, item)
+            dm.addLinkProduct(opt.uri, item)
           }
         })
 
         // Update number of pages
         let pages = $('#zg_paginationWrapper').find('a').length
         if (pages == 0) pages = 1
-        lm.updateLinkPages(opt.uri, pages).then(r => {
-          lm.updateLinkScrapedPages(opt.uri, 1).then(r2 => {
+        dm.updateLinkPages(opt.uri, pages).then(r => {
+          dm.updateLinkScrapedPages(opt.uri, 1).then(r2 => {
             if (scraping_page >= pages) {
-              lm.updateLinkScraped(opt.uri, true).then(r3 => {
+              dm.updateLinkScraped(opt.uri, true).then(r3 => {
                 this.nextLoop(opt)
               })
             } else {
@@ -128,6 +122,6 @@ class Main {
 var main = new Main()
 
 // only virgin run will add a new link entry
-lm.addLink("https://www.amazon.com/Best-Sellers/zgbs", "Amazon Best Sellers", null).then(r => {
+dm.addLink("https://www.amazon.com/Best-Sellers/zgbs", "Amazon Best Sellers", null).then(r => {
   main.execute()
 }).catch(err => {console.log(err)})
