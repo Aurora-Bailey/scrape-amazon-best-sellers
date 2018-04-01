@@ -1,5 +1,12 @@
 class Config {
   constructor () {
+    //================================ Setup =====================================
+    this.proxies = [
+      "34.212.167.1",
+      "54.218.13.67",
+      "54.218.2.246"
+    ]
+    
     //================================ Database ==================================
     this.database_url = 'mongodb://localhost:27017'
     this.database_name = 'scrape-amazon-test'

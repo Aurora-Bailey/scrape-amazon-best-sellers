@@ -1,14 +1,11 @@
 const http = require('http')
+const config = require('./config')
 
 class Master {
   constructor (cluster) {
     this.cluster = cluster
     this.workers = []
-    this.proxies = [
-      "34.212.167.1",
-      "54.218.13.67",
-      "54.218.2.246"
-    ]
+    this.proxies = config.proxies
 
     this.listenForClusterEvents()
     this.createWorkers()
