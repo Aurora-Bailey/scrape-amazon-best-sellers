@@ -6,12 +6,19 @@ class Worker {
     this.proxy = process.env.PROXY
 
     this.listenForProcessEvents()
-    crawler.start()
   }
 
   listenForProcessEvents () {
     process.on('message', m => {
-      console.log(m)
+      switch (m) {
+        case 'start':
+          crawler.start()
+          break;
+        case 'stop':
+          crawler.stop()
+          break;
+        default:
+      }
     })
   }
 }
