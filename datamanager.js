@@ -1,6 +1,6 @@
 const mongo = require('./mongodb')
 
-class dataManager {
+class DataManager {
   constructor() {
   }
 
@@ -86,4 +86,4 @@ class dataManager {
   }
 }
 
-module.exports = new dataManager()
+module.exports = new DataManager()
