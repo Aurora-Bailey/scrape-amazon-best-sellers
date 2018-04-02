@@ -1,5 +1,6 @@
 const http = require('http')
 const config = require('./config')
+const dm = require('./datamanager')
 
 class Master {
   constructor (cluster) {
@@ -8,8 +9,12 @@ class Master {
     this.proxies = config.proxies
 
     this.listenForClusterEvents()
-    this.createWorkers()
     this.createServer()
+
+    // add seed link before creating workers
+    dm.seedLink(config.seed.url, config.seed.title).then(r => {
+      this.createWorkers()
+    }).catch(err => {console.error(err)})
   }
 
   listenForClusterEvents () {

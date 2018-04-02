@@ -68,6 +68,14 @@ class DataManager {
     })
   }
 
+  seedLink (uri, text) {
+    return new Promise((resolve, reject) => {
+      this.addLink(uri, text, null).then(r => {
+        resolve(r)
+      }).catch(err => {reject(err)})
+    })
+  }
+
   getScrapeLink (worker) {
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
