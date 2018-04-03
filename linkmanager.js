@@ -12,7 +12,7 @@ class LinkManager {
 
   addLink (uri, text, parent_uri) {
     let uri_md5 = md5(uri.toLowerCase())
-    let parent_uri_md5 = md5(parent_uri.toLowerCase())
+    let parent_uri_md5 = md5(parent_uri === false ? false : parent_uri.toLowerCase())
 
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
@@ -20,7 +20,7 @@ class LinkManager {
           if (err) reject(err)
           else {
             if (docs.length == 0) {
-              db.collection(this.collection).insertOne({text, uri, uri_md5, parent_uri, parent_uri_md5, added: Date.now(), last_scraped: 0, scraped: false, worker: false}, (err, results) => {
+              db.collection(this.collection).insertOne({text, uri, uri_md5, parent_uri, parent_uri_md5, added: Date.now(), last_scraped: 0, scraped: false, worker: 'none'}, (err, results) => {
                 if (err) reject(err)
                 else resolve(true)
               })

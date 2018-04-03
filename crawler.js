@@ -20,7 +20,7 @@ class Crawler {
       this.request(link.uri).then(response => {
         scraper.scrape(link.uri, response).then(new_links => {
           new_links.forEach(nl => {
-            lm.addLink(nl.uri, nl.text, nl.parent_uri).catch(err => {console.error('Add Link Error:', err)})
+            lm.addLink(nl.uri, nl.text, link.uri).catch(err => {console.error('Add Link Error:', err)})
           })
           lm.releaseLink(link._id).then(r => {
             this.next() // add links somewhere

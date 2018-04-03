@@ -2,9 +2,9 @@ class Config {
   constructor () {
     //================================ Setup =====================================
     this.proxies = [
-      "34.212.167.1",
-      "54.218.13.67",
-      "54.218.2.246"
+      // "54.213.169.78",
+      // "35.165.172.59",
+      "54.202.100.177"
     ]
     this.proxy_port = ':3128'
     this.proxy_protocol = 'http://'
@@ -31,7 +31,7 @@ class Config {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
     }
     this.gzip = true
-    this.speed = 1000 // time between each request per proxy in milliseconds
+    this.speed = 2000 // time between each request per proxy in milliseconds
     this.error_timeout = 60000 // on error move to next link after x milliseconds
   }
 }

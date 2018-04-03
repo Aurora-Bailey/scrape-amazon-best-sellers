@@ -12,9 +12,9 @@ class Scraper {
       let newLinks = []
 
       if (response.headers['content-type'].match('json')) {
-        newLinks.concat(this.json(uri, response.body))
+        newLinks = this.json(uri, response.body)
       } else if (response.headers['content-type'].match('html')) {
-        newLinks.concat(this.html(uri, response.body))
+        newLinks = this.html(uri, response.body)
       }
 
       resolve(newLinks)
@@ -26,19 +26,19 @@ class Scraper {
     var strip_current_uri = current_uri.split('?')[0]
 
     // title
-    let page_title $('#zg_listTitle').text()
+    let page_title = $('#zg_listTitle').text()
 
     // Find new links
     var foundLinks = []
     $('#zg_browseRoot').find('a').each(function (i, e) {
       let uri = $(this).attr('href').split('/ref=')[0]
       let text = $(this).text()
-      foundLinks.push({uri, text, current_uri})
+      foundLinks.push({uri, text})
     })
     // Pagination to links
     let pages = $('#zg_paginationWrapper').find('a').length
     for (var i = 2; i <= pages; i++) {
-      foundLinks.push({uri: strip_current_uri + '?pg=' + i, text: 'pagination', parent_uri: strip_current_uri})
+      foundLinks.push({uri: strip_current_uri + '?pg=' + i, text: 'pagination'})
     }
 
     // Find procucts/data

@@ -9,7 +9,7 @@ class DataManager {
   newEntry (uri, uri_md5, title) {
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
-        db.collection(this.collection).insertOne({uri, uri_md5, title, data: [] added: Date.now()}, (err, results) => {
+        db.collection(this.collection).insertOne({uri, uri_md5, title, data: [], added: Date.now()}, (err, results) => {
           if (err) reject(err)
           else resolve(true)
         })
@@ -29,7 +29,7 @@ class DataManager {
   }
 
   insertData (uri, title, data) {
-    let uri_md5 = md5(uri)
+    let uri_md5 = md5(uri.toLowerCase())
 
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
@@ -39,13 +39,13 @@ class DataManager {
             if (docs.length == 0) {
               // not found
               this.newEntry(uri, uri_md5, title).then(r => {
-                this.updateData(uri_md5, data)then(r => {
+                this.updateData(uri_md5, data).then(r => {
                   resolve(true)
                 }).catch(err => {reject(err)})
               }).catch(err => {reject(err)})
             } else {
               // found
-              this.updateData(uri_md5, data)then(r => {
+              this.updateData(uri_md5, data).then(r => {
                 resolve(true)
               }).catch(err => {reject(err)})
             }
