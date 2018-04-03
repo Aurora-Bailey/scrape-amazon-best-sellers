@@ -45,7 +45,7 @@ class Crawler {
   }
 
   request (uri, qs = {}) {
-    console.log(`Scraping: "${uri}" qs: ${JSON.stringify(qs)} proxy: ${this.proxy}`)
+    console.log(`${this.proxy} -> "${uri}"`) // qs: ${JSON.stringify(qs)}
     return rp({
       qs,
       uri,

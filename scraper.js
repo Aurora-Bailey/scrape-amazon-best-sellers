@@ -43,6 +43,7 @@ class Scraper {
 
     // Find procucts/data
     let product_list = []
+    let unable_to_parse = 0
     $('.zg_itemImmersion').each(function (i, e) {
       let item = {}
       try {
@@ -57,12 +58,13 @@ class Scraper {
         product_list.push(item)
       }
       catch(err) {
-        console.log('unable to parse item')
+        unable_to_parse++
         item.error = true
         // lm.addLinkProduct(opt.uri, item)
         product_list.push(item)
       }
     })
+    if (unable_to_parse) console.log('Unable to parse ' + unable_to_parse + ' items')
 
     dm.insertData(strip_current_uri, page_title, product_list).catch(err => {console.error(err)})
     return foundLinks
