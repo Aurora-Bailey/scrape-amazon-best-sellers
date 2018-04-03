@@ -3,7 +3,7 @@ const md5 = require('md5')
 
 class LinkManager {
   constructor() {
-    this.link_collection = 'crawler_links'
+    this.collection = 'crawler_links'
   }
 
   seedLink (uri, text) {
@@ -16,11 +16,11 @@ class LinkManager {
 
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
-        db.collection(this.link_collection).find({uri_md5}).toArray((err, docs) => {
+        db.collection(this.collection).find({uri_md5}).toArray((err, docs) => {
           if (err) reject(err)
           else {
             if (docs.length == 0) {
-              db.collection('links').insertOne({text, uri, uri_md5, parent_uri, parent_uri_md5, added: Date.now(), last_scraped: 0, scraped: false, worker: false}, (err, results) => {
+              db.collection(this.collection).insertOne({text, uri, uri_md5, parent_uri, parent_uri_md5, added: Date.now(), last_scraped: 0, scraped: false, worker: false}, (err, results) => {
                 if (err) reject(err)
                 else resolve(true)
               })
@@ -36,7 +36,7 @@ class LinkManager {
   checkoutLink (worker) {
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
-        db.collection(this.link_collection).findOneAndUpdate({scraped: false, worker: 'none'}, {$set: {worker}}, (err, results) => {
+        db.collection(this.collection).findOneAndUpdate({scraped: false, worker: 'none'}, {$set: {worker}}, (err, results) => {
           if (err) reject(err)
           else {
             if (results.value) {
@@ -53,7 +53,7 @@ class LinkManager {
   releaseLink (_id) {
     return new Promise((resolve, reject) => {
       mongo.getDB().then(db => {
-        db.collection(this.link_collection).updateOne({_id}, {$set: {worker: 'none', scraped: true, last_scraped: Date.now()}}, (err, results) => {
+        db.collection(this.collection).updateOne({_id}, {$set: {worker: 'none', scraped: true, last_scraped: Date.now()}}, (err, results) => {
           if (err) reject(err)
           else resolve(true)
         })
