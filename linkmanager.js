@@ -1,7 +1,7 @@
 const mongo = require('./mongodb')
 const md5 = require('md5')
 
-class DataManager {
+class LinkManager {
   constructor() {
     this.link_collection = 'crawler_links'
   }
@@ -62,4 +62,4 @@ class DataManager {
   }
 }
 
-module.exports = new DataManager()
+module.exports = new LinkManager()

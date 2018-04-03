@@ -1,6 +1,6 @@
 const rp = require('request-promise')
 const scraper = require('./scraper')
-const dm = require('./datamanager')
+const lm = require('./linkmanager')
 const config = require('./config')
 
 class Crawler {
@@ -16,13 +16,13 @@ class Crawler {
   }
 
   execute () {
-    dm.checkoutLink(this.proxy).then(link => {
+    lm.checkoutLink(this.proxy).then(link => {
       this.request(link.uri).then(response => {
         scraper.scrape(link.uri, response).then(new_links => {
           new_links.forEach(nl => {
-            dm.addLink(nl.uri, nl.text, nl.parent_uri).catch(err => {console.error('Add Link Error:', err)})
+            lm.addLink(nl.uri, nl.text, nl.parent_uri).catch(err => {console.error('Add Link Error:', err)})
           })
-          dm.releaseLink(link._id).then(r => {
+          lm.releaseLink(link._id).then(r => {
             this.next() // add links somewhere
           }).catch(err => {console.error('Release Link Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
         }).catch(err => {console.error('Scrape Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})

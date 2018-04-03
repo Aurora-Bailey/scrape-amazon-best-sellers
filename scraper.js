@@ -48,12 +48,12 @@ class Scraper {
         item.rating = parseFloat($(this).find('.a-icon-star').text().split(' ')[0])
         item.numreviews = parseInt($(this).find('.a-size-small').text().replace(/\W/g, ''))
         item.link = 'https://www.amazon.com' + $(this).find('.a-text-normal').attr('href').split('/ref=')[0]
-        // dm.addLinkProduct(opt.uri, item)
+        // lm.addLinkProduct(opt.uri, item)
       }
       catch(err) {
         console.log('unable to parse item')
         item.error = true
-        // dm.addLinkProduct(opt.uri, item)
+        // lm.addLinkProduct(opt.uri, item)
       }
     })
 

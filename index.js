@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
 const rp = require('request-promise')
-const dm = require('./datamanager')
+const lm = require('./linkmanager')
 
 class Main {
   constructor () {
@@ -19,7 +19,7 @@ class Main {
 
   execute (opt = {uri: '', qs: {}}) {
     opt.proxy = this.getProxy()
-    dm.getScrapeLink(opt.proxy).then(link => {
+    lm.getScrapeLink(opt.proxy).then(link => {
       let scraping_page = link.scraped_pages + 1
       opt.qs.pg = scraping_page
       opt.uri = link.uri
@@ -34,7 +34,7 @@ class Main {
         $('#zg_browseRoot').find('a').each(function (i, e) {
           let uri = $(this).attr('href').split('/ref=')[0]
           let text = $(this).text()
-          dm.addLink(uri, text, opt.uri)
+          lm.addLink(uri, text, opt.uri)
         })
 
         // Get Product Data
@@ -48,22 +48,22 @@ class Main {
             item.rating = parseFloat($(this).find('.a-icon-star').text().split(' ')[0])
             item.numreviews = parseInt($(this).find('.a-size-small').text().replace(/\W/g, ''))
             item.link = 'https://www.amazon.com' + $(this).find('.a-text-normal').attr('href').split('/ref=')[0]
-            dm.addLinkProduct(opt.uri, item)
+            lm.addLinkProduct(opt.uri, item)
           }
           catch(err) {
             console.log('unable to parse item')
             item.error = true
-            dm.addLinkProduct(opt.uri, item)
+            lm.addLinkProduct(opt.uri, item)
           }
         })
 
         // Update number of pages
         let pages = $('#zg_paginationWrapper').find('a').length
         if (pages == 0) pages = 1
-        dm.updateLinkPages(opt.uri, pages).then(r => {
-          dm.updateLinkScrapedPages(opt.uri, 1).then(r2 => {
+        lm.updateLinkPages(opt.uri, pages).then(r => {
+          lm.updateLinkScrapedPages(opt.uri, 1).then(r2 => {
             if (scraping_page >= pages) {
-              dm.updateLinkScraped(opt.uri, true).then(r3 => {
+              lm.updateLinkScraped(opt.uri, true).then(r3 => {
                 this.nextLoop(opt)
               })
             } else {
@@ -121,6 +121,6 @@ class Main {
 var main = new Main()
 
 // only virgin run will add a new link entry
-dm.addLink("https://www.amazon.com/Best-Sellers/zgbs", "Amazon Best Sellers", null).then(r => {
+lm.addLink("https://www.amazon.com/Best-Sellers/zgbs", "Amazon Best Sellers", null).then(r => {
   main.execute()
 }).catch(err => {console.log(err)})

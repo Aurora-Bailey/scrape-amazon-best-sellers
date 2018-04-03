@@ -1,6 +1,6 @@
 const http = require('http')
 const config = require('./config')
-const dm = require('./datamanager')
+const lm = require('./linkmanager')
 
 class Master {
   constructor (cluster) {
@@ -12,7 +12,7 @@ class Master {
     this.createServer()
 
     // add seed link before creating workers
-    dm.seedLink(config.seed.url, config.seed.title).then(r => {
+    lm.seedLink(config.seed.url, config.seed.title).then(r => {
       this.createWorkers()
     }).catch(err => {console.error(err)})
   }
