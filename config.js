@@ -12,6 +12,7 @@ class Config {
     //================================ Database ==================================
     this.database_url = 'mongodb://localhost:27017'
     this.database_name = 'scrape-amazon-test'
+    // this.database_name = 'scrape-amazon-best-sellers'
 
     //================================ Crawler ===================================
     this.seed = {

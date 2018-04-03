@@ -5,7 +5,6 @@ const config = require('./config')
 
 class Crawler {
   constructor () {
-    this.seed_options = config.seed
     this.headers = config.headers
     this.gzip = config.gzip
     this.speed = config.speed
@@ -16,25 +15,22 @@ class Crawler {
     this.proxy = process.env.PROXY
   }
 
-  execute (opt = {}) {
-    if (opt.uri && opt.qs) {
-      // process the last link with a new query string
-      this.request(opt.uri, opt.qs).then(response => {
-
+  execute () {
+    dm.checkoutLink(this.proxy).then(link => {
+      this.request(link.uri).then(response => {
+        scraper.scrape(link.uri, response).then(new_links => {
+          new_links.forEach(nl => {
+            dm.addLink(nl.uri, nl.text, nl.parent_uri).catch(err => {console.error('Add Link Error:', err)})
+          })
+          dm.releaseLink(link._id).then(r => {
+            this.next() // add links somewhere
+          }).catch(err => {console.error('Release Link Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
+        }).catch(err => {console.error('Scrape Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
       }).catch(err => {console.error('Request Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
-    } else {
-      // grab a new link
-      dm.getScrapeLink().then(link => {
-        this.request(link.uri).then(response => {
-
-        }).catch(err => {console.error('Request Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
-      }).catch(err => {console.error('Get link Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
-    }
-
-    this.next()
+    }).catch(err => {console.error('Checkout link Error:', err); setTimeout(() => {this.next()}, this.error_timeout)})
   }
 
-  next (opt) {
+  next () {
     let milliseconds_since_last_loop = Date.now() - this.last
     let milliseconds_to_next_loop = this.speed - milliseconds_since_last_loop
     setTimeout(() => {
@@ -44,7 +40,7 @@ class Crawler {
         return false
       }
       this.last = Date.now()
-      this.execute(opt)
+      this.execute()
     }, Math.max(0, milliseconds_to_next_loop))
   }
 
@@ -55,15 +51,8 @@ class Crawler {
       uri,
       gzip: this.gzip,
       proxy: config.proxy_protocol + this.proxy + config.proxy_port,
-      headers: this.headers
-    })
-  }
-
-  seed () {
-    return new Promise((resolve, reject) => {
-      dm.addLink(this.seed_options.url, this.seed_options.title, null).then(r => {
-        resolve(r)
-      }).catch(err => {reject(err)})
+      headers: this.headers,
+      resolveWithFullResponse: true
     })
   }
 
