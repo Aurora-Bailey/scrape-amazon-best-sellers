@@ -6,3 +6,6 @@ npm-debug.log
 
 # temp
 temp.js
+
+# database backup
+dump
