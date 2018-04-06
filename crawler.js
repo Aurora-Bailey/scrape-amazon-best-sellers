@@ -46,9 +46,10 @@ class Crawler {
   }
 
   request (uri, override_qs) {
-    console.log(`${this.proxy} -> "${uri}"`)
+    let qs = override_qs ? override_qs : this.query_string
+    console.log(`${this.proxy} -> "${uri}" ${JSON.stringify(qs)}`)
     return rp({
-      qs: override_qs ? override_qs : this.query_string,
+      qs,
       uri,
       gzip: this.gzip,
       proxy: config.proxy_protocol + this.proxy + config.proxy_port,
