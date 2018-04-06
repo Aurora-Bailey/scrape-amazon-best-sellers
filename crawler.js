@@ -9,6 +9,7 @@ class Crawler {
     this.gzip = config.gzip
     this.speed = config.speed
     this.error_timeout = config.error_timeout
+    this.query_string = config.query_string
     this.last = 0 // time of last scrape
     this.state = 'off' // running stop off
     this.start_date = Date.now()
@@ -44,10 +45,10 @@ class Crawler {
     }, Math.max(0, milliseconds_to_next_loop))
   }
 
-  request (uri, qs = {}) {
-    console.log(`${this.proxy} -> "${uri}"`) // qs: ${JSON.stringify(qs)}
+  request (uri, override_qs) {
+    console.log(`${this.proxy} -> "${uri}"`)
     return rp({
-      qs,
+      qs: override_qs ? override_qs : this.query_string,
       uri,
       gzip: this.gzip,
       proxy: config.proxy_protocol + this.proxy + config.proxy_port,

@@ -57,6 +57,7 @@ class Config {
     this.gzip = true
     this.speed = 2000 // time between each request per proxy in milliseconds
     this.error_timeout = 60000 // on error move to next link after x milliseconds
+    this.query_string = {}
   }
 }
 module.exports = new Config()
